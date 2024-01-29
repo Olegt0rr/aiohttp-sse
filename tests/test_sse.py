@@ -63,7 +63,7 @@ async def test_func(
         assert streamed_data == expected
 
 
-async def test_post_method(aiohttp_client: ClientFixture):
+async def test_post_method(aiohttp_client: ClientFixture) -> None:
     """Check that EventSourceResponse object works only with GET method."""
 
     async def handler(request: web.Request) -> web.StreamResponse:
