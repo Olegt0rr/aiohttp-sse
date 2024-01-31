@@ -448,19 +448,14 @@ class TestSSEState:
 async def test_connection_is_not_alive(aiohttp_client: ClientFixture) -> None:
     async def func(request: web.Request) -> web.StreamResponse:
         # within context manager first preparation is already done
-        async with sse_response(request) as resp:
-            resp.ping_interval = 1
-
-            # we should sleep to switch asyncio Task
-            # and let connection to be closed
-            while resp.is_connected():
-                await asyncio.sleep(0.01)
+        async with sse_response(request) as sse:
+            request.protocol.force_close()
 
             # this call should be cancelled, cause connection is closed
             with pytest.raises(asyncio.CancelledError):
-                await resp.prepare(request)
+                await sse.prepare(request)
 
-            return resp  # pragma: no cover
+            return sse  # pragma: no cover
 
     app = web.Application()
     app.router.add_route("GET", "/", func)
