@@ -67,9 +67,9 @@ async def test_post_method(aiohttp_client: ClientFixture) -> None:
     """Check that EventSourceResponse object works only with GET method."""
 
     async def handler(request: web.Request) -> web.StreamResponse:
-        async with sse_response(request) as sse:
-            await sse.wait()
-        return sse
+        sse = EventSourceResponse()
+        await sse.prepare(request)
+        return sse  # pragma: no cover (previous line raises exception)
 
     app = web.Application()
     app.router.add_route("POST", "/", handler)
